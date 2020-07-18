@@ -24,10 +24,10 @@ const TodoCard = props => {
     });
 
     return (
-        <GradientCard style={styles.card} gradientColors={generateGradientArray()}>
+        <GradientCard style={styles.card} gradientColors={props.todo.gradient}>
             <View style={styles.innerCard}>
                 <DefaultText style={styles.title}>
-                {props.children}
+                {props.todo.title}
                 </DefaultText>
             </View>
         </GradientCard>

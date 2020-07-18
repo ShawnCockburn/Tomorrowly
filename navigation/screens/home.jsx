@@ -5,9 +5,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ActionButton from 'react-native-action-button';
 import Header from '../../components/header/header';
 import TodoCard from '../../components/todoItem/todoCard';
-import { Theme } from '../../constants/Theme';
+import { Theme, generateGradientArray } from '../../constants/Theme';
+import { useSelector, useDispatch } from "react-redux";
+import { ADD_TODO, addTodo, delTodo } from '../../store/actions/todos';
+import Todo from "../../data/models/todo";
+import DueDate from "../../data/models/dueDate";
+import uidGenerator from '../../util/uidGenerator';
 
 const HomeScreen = () => {
+
+    const todos = useSelector(state => state.todos.todos);
+    const dispatch = useDispatch();
+
     const theme = Theme();
     const styles = StyleSheet.create({
         actionButtonIcon: {
@@ -24,29 +33,42 @@ const HomeScreen = () => {
         }
     });
 
-    //todo remove this test data and add redux
-    const [listViewData, setListViewData] = useState([{ key: `${1}`, text: `item #${1}` }]);
-
+    const today = {
+        // year: 2020,
+        // month: 07,
+        // day: 18
+    }
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <Header>Today</Header>
             <SwipeListView
-                data={listViewData}
-                keyExtractor={(item, index) => item.text}
+                data={todos}
+                keyExtractor={(item, index) => item.id}
                 renderItem={(data, rowMap) => (
-                    <TodoCard>{data.item.text}</TodoCard>
+                    <TodoCard todo={data.item} />
                 )}
                 renderHiddenItem={(data, rowMap) => (
                     <></>
                 )}
                 leftOpenValue={75}
                 stopRightSwipe={1}
-                onRowOpen={item => { setListViewData([...listViewData.filter((e,i) => i !== (item-1))])}}
+                onRowOpen={id => { dispatch(delTodo(id))}}
             />
             <ActionButton
                 buttonColor={theme.colors.primary}
-                onPress={() => { setListViewData([...listViewData, { key: `${listViewData.length+1}`, text: `item #${listViewData.length+1}` }])}}
+                onPress={async () => {
+                    dispatch(addTodo(
+                        new Todo(
+                            await uidGenerator(),
+                            today,
+                            "Test",
+                            "",
+                            generateGradientArray(),
+                            {},
+                            false)
+                    ));
+                }}
                 shadowStyle={styles.actionButtonShadow}
                 position="center"
             />
