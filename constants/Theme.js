@@ -1,6 +1,7 @@
 import { useColorScheme } from 'react-native-appearance';
 import { StatusBar } from 'react-native';
 import { DefaultTheme, DarkTheme } from '@react-navigation/native';
+import _ from "lodash";
 
 export const customDarkTheme = {
     ...DarkTheme
@@ -16,4 +17,22 @@ export const Theme = () => {
 
     StatusBar.setBarStyle(scheme === 'dark' ? "light-content" : "dark-content");
     return scheme === 'dark' ? customDarkTheme : customLightTheme;
+};
+
+export const generateGradientArray = colorQuantity => {
+    const colors = [
+        "#2C3E50",
+        "#FD746C",
+        "#405de6",
+        "#5851db",
+        "#833ab4",
+        "#c13584",
+        "#e1306c",
+        "#fd1d1d",
+        "#e96443",
+        "#904e95",
+        "#A43931",
+        "#1D4350"
+    ];
+    return _.sampleSize(colors, colorQuantity > 0 ? colorQuantity : 2);
 };

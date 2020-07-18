@@ -2,6 +2,7 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import GradientCard from '../../components/card/gradientCard';
 import DefaultText from '../../components/text/defaultText';
+import { generateGradientArray } from '../../constants/Theme';
 
 
 const TodoCard = props => {
@@ -23,7 +24,7 @@ const TodoCard = props => {
     });
 
     return (
-        <GradientCard style={styles.card} gradientColors={["#405de6", "#5851db", "#833ab4", "#c13584", "#e1306c", "#fd1d1d"]}>
+        <GradientCard style={styles.card} gradientColors={generateGradientArray()}>
             <View style={styles.innerCard}>
                 <DefaultText style={styles.title}>
                 {props.children}

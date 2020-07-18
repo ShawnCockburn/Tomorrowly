@@ -3,6 +3,10 @@ import Navigation from "./navigation/navigation";
 import * as Font from "expo-font"
 import { AppLoading } from 'expo';
 
+
+import {YellowBox} from 'react-native';
+YellowBox.ignoreWarnings(['Warning: componentWillReceiveProps has been renamed, and is not recommended for use']);
+
 const fetchFonts = () => {
   return Font.loadAsync({
     'Ubuntu-Bold': require("./assets/fonts/Ubuntu-Bold.ttf"),
