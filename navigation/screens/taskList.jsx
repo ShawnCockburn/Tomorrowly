@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ActionButton from 'react-native-action-button';
@@ -133,14 +133,19 @@ const TaskList = ({ navigation, route }) => {
                     tension={200}
                 />
                 <View style={styles.bottomBar}>
-                    <MaterialIcons style={{ opacity: route.name === ROUTE_NAMES.COMPLETED ? 0 : 1 }} name="keyboard-arrow-left" size={30} color={theme.colors.text} onPress={() => navTo(NAV_TO.BACK)} />
-                    <MaterialIcons style={{ opacity: route.name === ROUTE_NAMES.TOMORROW ? 0 : 1 }} name="keyboard-arrow-right" size={30} color={theme.colors.text} onPress={() => navTo(NAV_TO.NEXT)} />
+                    <TouchableWithoutFeedback onPress={() => navTo(NAV_TO.BACK)} hitSlop={30}>
+                        <MaterialIcons style={{ opacity: route.name === ROUTE_NAMES.COMPLETED ? 0 : 1 }} name="keyboard-arrow-left" size={30} color={theme.colors.text} />
+                    </TouchableWithoutFeedback>
+                    <TouchableWithoutFeedback onPress={() => navTo(NAV_TO.NEXT)} hitSlop={30}>
+                        <MaterialIcons style={{ opacity: route.name === ROUTE_NAMES.TOMORROW ? 0 : 1 }} name="keyboard-arrow-right" size={30} color={theme.colors.text} />
+                    </TouchableWithoutFeedback>
                 </View>
                 {route.name !== ROUTE_NAMES.COMPLETED ? (<ActionButton
                     buttonColor={theme.colors.secondary}
                     buttonTextStyle={{ color: theme.colors.text }}
                     onPress={
                         async () => {
+                            // navigation.navigate("INPUT")
                             dispatch(addTodo(
                                 new Todo(
                                     await uidGenerator(),
