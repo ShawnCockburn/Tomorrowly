@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import { StyleSheet, TouchableHighlight } from 'react-native';
 
 import { Theme } from "../../constants/Theme";
 
@@ -16,9 +16,9 @@ const Card = props => {
         }
     });
     return (
-        <TouchableOpacity style={{ ...styles.card, ...props.style }}>
+        <TouchableHighlight style={{ ...styles.card, ...props.style }} active>
             {props.children}
-        </TouchableOpacity>
+        </TouchableHighlight>
     );
 };
 

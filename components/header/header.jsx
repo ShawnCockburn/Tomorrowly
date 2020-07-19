@@ -35,7 +35,7 @@ const header = props => {
                 {props.children}
             </DefaultText>
             <DefaultText style={styles.headerTextSmall}>
-                {time}
+                {props.subtitle ? props.subtitle: time}
             </DefaultText>
         </View>
     );

@@ -1,19 +1,29 @@
-// todo
-export const isToday = dueDate => {
-    //return isToday 
+import DueDate from "../data/models/dueDate";
+
+export const getToday = () => {
+    return new Date();
 };
 
-// todo
-export const isTomorrow = dueDate => {
-    //return isTommorow
+export const getTomorrow = () => {
+    let tomorrow = new Date(getToday());
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return tomorrow;
 };
 
 // todo
 export const isLater = dueDate => {
-    //return isLater
+    var GivenDate = new Date(dueDate.year, dueDate.month, dueDate.day);
+    var CurrentDate = new Date();
+    return (GivenDate > CurrentDate);
 };
 
-// todo
-export const isOlder = dueDate => {
-    //return isOlder
+export const getDueDate = date => {
+    return new DueDate(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+    );
 };
+
+
+
