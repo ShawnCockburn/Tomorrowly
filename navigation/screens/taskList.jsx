@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { StyleSheet, View, TouchableWithoutFeedback } from 'react-native';
+,import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, TouchableWithoutFeedback, TextInput, TouchableOpacity } from 'react-native';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ActionButton from 'react-native-action-button';
@@ -8,13 +8,15 @@ import TodoCard from '../../components/todoItem/todoCard';
 import { Theme, generateGradientArray } from '../../constants/Theme';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSelector, useDispatch } from "react-redux";
-import { addTodo, tomTodo, comTodo, uncompTodo, todTodo } from '../../store/actions/todos';
+import { addTodo, tomTodo, comTodo, uncompTodo, todTodo, ediTodo, delTodo } from '../../store/actions/todos';
 import Todo from "../../data/models/todo";
 import { MaterialIcons } from "@expo/vector-icons";
 import uidGenerator from '../../util/uidGenerator';
 import _ from "lodash";
 import { getDueDate, isLater, getToday, getTomorrow } from '../../util/dateHelper';
-
+import { Dialog } from 'react-native-simple-dialogs';
+import DefaultText from '../../components/text/defaultText';
+import * as RnGestureHandler from 'react-native-gesture-handler';
 
 const TaskList = ({ navigation, route }) => {
 
@@ -38,9 +40,57 @@ const TaskList = ({ navigation, route }) => {
             alignContent: "center",
             justifyContent: "space-between",
             paddingHorizontal: 30,
-            paddingBottom: 38
+            position: "absolute",
+            bottom: 42
+        },
+        dialog: {
+            backgroundColor: theme.colors.card,
+            overflow: "hidden",
+            height: 120
+        },
+        dialogContainer: {
+            alignSelf: "center",
+            width: "100%"
+        },
+        dialogTitleContainer: {
+            alignItems: "center"
+        },
+        dialogInputContainer: {
+            paddingVertical: 10,
+            alignItems: "center"
+        },
+        dialogInput: {
+            width: 200,
+            backgroundColor: theme.colors.primary,
+            height: 30,
+            textAlign: "center",
+            borderRadius: 5,
+            color: theme.colors.text
+        },
+        dialogButtonsContainer: {
+            height: 30,
+            flexDirection: "row",
+            alignItems: "stretch",
+            flex: 1
+        },
+        dialogButtons: {
+            borderWidth: 0.5,
+            borderColor: theme.colors.text,
+            height: 33,
+            flex: 1,
+            borderBottomLeftRadius: 5,
+            borderBottomRightRadius: 5,
+            opacity: 0.7
+        },
+        dialogButtonsText: {
+            alignSelf: "center",
+            paddingTop: 7
         }
     });
+
+    const [dialogIsOpen, setDialogIsOpen] = useState(false);
+    const [dialogTextInput, setDialogTextInput] = useState("");
+    const [dialogCurrentSelectedTodo, setDialogCurrentSelectedTodo] = useState(undefined);
 
     const ROUTE_NAMES = route.params.ROUTE_NAMES;
 
@@ -107,6 +157,58 @@ const TaskList = ({ navigation, route }) => {
             end={[0.95, 0.6]}
         >
             <SafeAreaView style={{ flex: 1 }}>
+                <Dialog
+                    visible={dialogIsOpen}
+                    onTouchOutside={() => setDialogIsOpen(false)}
+                    dialogStyle={styles.dialog}
+                    contentStyle={{ paddingBottom: 0, paddingLeft: 0, paddingRight: 0, }}
+                >
+                    <View style={styles.dialogContainer}>
+                        <View style={styles.dialogTitleContainer}>
+                            <DefaultText>{dialogCurrentSelectedTodo === undefined ? "New Todo" : "Edit Todo"}</DefaultText>
+                        </View>
+                        <View style={styles.dialogInputContainer}>
+                            <TextInput placeholder="Todo Name"
+                                placeholderTextColor={theme.colors.card}
+                                style={styles.dialogInput}
+                                value={dialogTextInput}
+                                onChangeText={setDialogTextInput}
+                                keyboardAppearance={theme.dark ? "dark" : "light"}
+                            />
+                        </View>
+                        <View style={styles.dialogButtonsContainer}>
+                            <TouchableOpacity style={[styles.dialogButtons, { borderBottomRightRadius: 0 }]} onPress={() => setDialogIsOpen(false)}>
+                                <DefaultText style={{ ...styles.dialogButtonsText, ...{ color: theme.colors.notification } }}>Cancel</DefaultText>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.dialogButtons, { borderBottomLeftRadius: 0 }]} onPress={async () => {
+                                dispatch(dialogCurrentSelectedTodo !== undefined ? ediTodo(
+                                    new Todo(
+                                        dialogCurrentSelectedTodo.id,
+                                        dialogCurrentSelectedTodo.dueDate,
+                                        dialogTextInput,
+                                        dialogCurrentSelectedTodo.description,
+                                        dialogCurrentSelectedTodo.gradient,
+                                        dialogCurrentSelectedTodo.optionalData,
+                                        dialogCurrentSelectedTodo.completed)
+                                ) : addTodo(
+                                    new Todo(
+                                        await uidGenerator(),
+                                        getDueDate(route.name === ROUTE_NAMES.TODAY ? getToday() : getTomorrow()),
+                                        dialogTextInput,
+                                        "",
+                                        generateGradientArray(),
+                                        {},
+                                        false)
+                                ));
+                                setDialogIsOpen(false);
+                                setDialogTextInput("");
+                                setDialogCurrentSelectedTodo(undefined);
+                            }}>
+                                <DefaultText style={styles.dialogButtonsText}>OK</DefaultText>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Dialog>
 
                 <Header subtitle={headerText()}>{_.upperFirst(_.lowerCase(route.name))}</Header>
                 <SwipeListView
@@ -114,7 +216,16 @@ const TaskList = ({ navigation, route }) => {
                     data={filterTodos()}
                     keyExtractor={(item, index) => item.id}
                     renderItem={(data, rowMap) => (
-                        <TodoCard todo={data.item} />
+                        <RnGestureHandler.TouchableWithoutFeedback
+                        /* fix this delete bug
+                        onLongPress={() => {delTodo(data.item.id);}}
+                        */
+                        onPress={() => {
+                            setDialogCurrentSelectedTodo(data.item);
+                            setDialogIsOpen(true);
+                        }}>
+                            <TodoCard todo={data.item} />
+                        </RnGestureHandler.TouchableWithoutFeedback>
                     )}
                     renderHiddenItem={(data, rowMap) => (
                         <></>
@@ -131,6 +242,9 @@ const TaskList = ({ navigation, route }) => {
                         if (data.isActivated) dispatch(route.name === ROUTE_NAMES.TODAY ? comTodo(data.key) : todTodo(data.key))
                     }}
                     tension={200}
+                    ListFooterComponent={
+                        <View style={{ height: 110 }} />
+                    }
                 />
                 <View style={styles.bottomBar}>
                     <TouchableWithoutFeedback onPress={() => navTo(NAV_TO.BACK)} hitSlop={30}>
@@ -143,20 +257,10 @@ const TaskList = ({ navigation, route }) => {
                 {route.name !== ROUTE_NAMES.COMPLETED ? (<ActionButton
                     buttonColor={theme.colors.secondary}
                     buttonTextStyle={{ color: theme.colors.text }}
-                    onPress={
-                        async () => {
-                            // navigation.navigate("INPUT")
-                            dispatch(addTodo(
-                                new Todo(
-                                    await uidGenerator(),
-                                    getDueDate(new Date()),
-                                    "Test",
-                                    "",
-                                    generateGradientArray(),
-                                    {},
-                                    false)
-                            ));
-                        }}
+                    onPress={() => {
+                        setDialogCurrentSelectedTodo(undefined);
+                        setDialogIsOpen(true);
+                    }}
                     shadowStyle={styles.actionButtonShadow}
                     position="center"
                 />) : <></>}
