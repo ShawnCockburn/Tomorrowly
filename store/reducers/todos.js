@@ -1,4 +1,4 @@
-import { ADD_TODO, DEL_TODO, COMPLETE_TODO, TOMORROW_TODO, UNCOMPLETE_TODO, TODAY_TODO } from "../actions/todos";
+import { ADD_TODO, DEL_TODO, COMPLETE_TODO, TOMORROW_TODO, UNCOMPLETE_TODO, TODAY_TODO, EDIT_TODO } from "../actions/todos";
 import Todo from "../../data/models/todo";
 import { getDueDate, getTomorrow, getToday } from "../../util/dateHelper";
 
@@ -81,6 +81,15 @@ const reducer = (state = initialState, action) => {
             };
         case DEL_TODO:
             return { ...state, todos: state.todos.filter(todo => todo.id !== action.todoId) };
+        case EDIT_TODO:
+            return {
+                ...state, todos: state.todos.map(todo => {
+                    if (todo.id === action.todo.id) {
+                        return action.todo;
+                    }
+                    return todo;
+                })
+            };
         default:
             return state;
     }

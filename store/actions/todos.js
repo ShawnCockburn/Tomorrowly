@@ -4,6 +4,7 @@ export const COMPLETE_TODO = "COMPLETE_TODO";
 export const UNCOMPLETE_TODO = "UNCOMPLETE_TODO";
 export const TOMORROW_TODO = "TOMORROW_TODO";
 export const TODAY_TODO = "TODAY_TODO";
+export const EDIT_TODO = "EDIT_TODO";
 
 
 export const addTodo = (todo) => {
@@ -28,4 +29,8 @@ export const tomTodo = (todoId) => {
 
 export const todTodo = (todoId) => {
     return {type: TODAY_TODO, todoId: todoId};
+};
+
+export const ediTodo = (todo) => {
+    return {type: EDIT_TODO, todo: todo};
 };

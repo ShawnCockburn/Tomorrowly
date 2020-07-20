@@ -8,13 +8,14 @@ export const customDarkTheme = {
     colors: {
         ...DarkTheme.colors,
         ...{
-            primary: "#ff5e57",
+            primary: "#1e272e",
             secondary: "#1e272e",
             // background: "#0e0e0e",
             card: "#485460",
             text: "#fff",
             border: "black",
-            notification: "#f43789"
+            notification: "#f43789",
+            good: "#05c46b"
         }
     }
 };
@@ -23,10 +24,11 @@ export const customLightTheme = {
     colors: {
         ...DefaultTheme.colors,
         ...{
-            primary: "#ff5e57",
+            primary: "#d2dae2",
             secondary: "white",
             background: "#f0f6fb",
-            notification: "#f43789"
+            notification: "#f43789",
+            good: "#05c46b"
         }
     }
 };
@@ -34,7 +36,7 @@ export const customLightTheme = {
 
 export const Theme = () => {
     // const scheme = useColorScheme();
-    const scheme = "dark";
+    const scheme = "light";
 
     StatusBar.setBarStyle(scheme === 'dark' ? "light-content" : "dark-content");
     return scheme === 'dark' ? customDarkTheme : customLightTheme;

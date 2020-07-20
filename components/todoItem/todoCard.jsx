@@ -3,7 +3,6 @@ import { StyleSheet, View } from 'react-native';
 import GradientCard from '../../components/card/gradientCard';
 import DefaultText from '../../components/text/defaultText';
 import { Theme } from '../../constants/Theme';
-import CheckBox from "../interactives/checkbox";
 
 const TodoCard = props => {
     const theme = Theme();
@@ -24,10 +23,8 @@ const TodoCard = props => {
         }
     });
 
-    const [isSelected, setSelection] = useState(true);
-
     return (
-        <GradientCard style={styles.card} gradientColors={props.todo.gradient}>
+        <GradientCard style={styles.card} gradientColors={props.todo.completed ? [theme.colors.good, theme.colors.card] : props.todo.gradient}>
             <View style={styles.innerCard}>
                 <DefaultText style={styles.title}>
                     {props.todo.title}
